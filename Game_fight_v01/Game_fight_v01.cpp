@@ -3,6 +3,13 @@
 
 #include <iostream>
 #include <time.h>   // time
+#include <list>
+
+#include "MyPlayer.h"
+#include "MyCard.h"
+#include "CardDesk.h"
+
+
 
 int randDice(int n) { //Генератор броска n кубиков
 	int k = 0;
@@ -19,7 +26,25 @@ int randDice(int n) { //Генератор броска n кубиков
 int main()
 {
     std::cout << "Hello World!\n";
+	//int mas[9] = { 0 };
+
+	//std::list<MyCard> c;
+	//MyPlayer pl1(100, mas , c);
+	MyCard mas1 = { 1,2,3,4,5 };
+	MyCard mas2 = { 2,8,3,4,0 };
+	MyCard mas3 = { 3,7,3,4,6 };
+	MyCard mas4 = { 4,5,3,4,3 };
+	MyCard mas5 = { 5,3,3,4,1 };
 	
+	CardDesk desk;
+	desk.addCard(mas1);
+	desk.addCard(mas2);
+	desk.addCard(mas3);
+	desk.addCard(mas4);
+	desk.addCard(mas5);
+
+	desk.print();
+
 }
 
 
