@@ -1,5 +1,10 @@
 #include "CardDesk.h"
 
+CardDesk::CardDesk()
+{
+	
+}
+
 CardDesk::CardDesk(std::list<MyCard> k) :cards(k)
 {
 

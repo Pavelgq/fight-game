@@ -29,13 +29,21 @@ int main()
 	//int mas[9] = { 0 };
 
 	//std::list<MyCard> c;
-	//MyPlayer pl1(100, mas , c);
-	MyCard mas1 = { 1,2,3,4,5 };
-	MyCard mas2 = { 2,8,3,4,0 };
-	MyCard mas3 = { 3,7,3,4,6 };
-	MyCard mas4 = { 4,5,3,4,3 };
-	MyCard mas5 = { 5,3,3,4,1 };
+	//MyPlayer pl1(100, mas , c, w);
+
+	//Создаем карты
+	MyCard mas1 = {"Sad cudgel",1,2,7,0,2,2,0};
+	MyCard mas2 = { "Bread knife",1,2,2,0,1,1,0 };
+	MyCard mas3 = { "Katana of darkness",1,4,6,0,6,1,0 };
+	MyCard mas4 = {"Nunchucks from Miki",1,2,4,0,3,2,0};
+	MyCard mas5 = { "Baby bat",1,1,1,0,1,1,0 };
 	
+	MyCard card1 = { "Long leg",2,4,7,0,2,2,0 };
+	MyCard card2 = { "Jaw kick",2,3,2,0,1,1,0 };
+	MyCard card3 = { "Flying dragon",2,5,6,0,6,1,0 };
+	MyCard card4 = { "Tiger shrimp",2,2,4,0,3,2,0 };
+	MyCard card5 = { "Nipples in a vise",2,1,1,0,1,1,0 };
+
 	CardDesk desk;
 	desk.addCard(mas1);
 	desk.addCard(mas2);
@@ -44,7 +52,11 @@ int main()
 	desk.addCard(mas5);
 
 	desk.print();
-
+	system("pause");
+	system("cls");
+	desk.shuffle();
+	
+	desk.print();
 }
 
 

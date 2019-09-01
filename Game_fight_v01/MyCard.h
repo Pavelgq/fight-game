@@ -1,15 +1,20 @@
 #pragma once
 #include <iostream>
+#include <string>
+
 class MyCard
 {
-	int type;
-	int distance;
-	int damage;
-	int defense;
-	int other;
+	std::string name; //Название
+	int type; //Тип (оружие, прием и т.д.)
+	int distance; //Дистанция действия
+	int damage; //Урон
+	int defense; //Защитные качества
+	int cost; // Вес/Стоимость
+	int body; //Какая часть тела задействована
+	int other; //Другое, доп. эффекты
 	
 public:
-	MyCard(int, int, int, int, int );
+	MyCard(std::string, int, int, int, int, int, int, int);
 	void print();
 };
 
