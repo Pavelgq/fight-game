@@ -1,10 +1,10 @@
 import { Logger } from "../Logger";
-import { Ability } from "../Player/Ability";
+import { Ability, AttackAbility } from "../Player/Ability";
 import { Fighter } from "../Player/Fighter";
 
 export type SectionParams = {
   title: string;
-  ability?: Ability;
+  ability?: AttackAbility | Ability;
 };
 
 const disableField = [
@@ -43,57 +43,60 @@ const disableField = [
   ],
 ];
 
-export type FieldAction = {}
+export type FieldAction = {};
 
-export type SectionState = [
-  [null, null, null],
-  [null, null, null],
-  [null, null, null]
+export type AvailableSectionState = [
+  [boolean, boolean, boolean],
+  [boolean, boolean, boolean],
+  [boolean, boolean, boolean]
 ];
 
 export class Field {
-  defenseSections: SectionParams[][] = disableField;
-  attackSections: SectionParams[][] = disableField;
+  defenseSections: SectionParams[][] = JSON.parse(JSON.stringify(disableField));
+  attackSections: SectionParams[][] = JSON.parse(JSON.stringify(disableField));
   position: number = 0;
   fighter: Fighter;
 
   constructor(fighter: Fighter) {
     this.fighter = fighter;
+
+    this.requestDefense.bind(this);
+    this.requestAttack.bind(this);
   }
 
   requestDefense() {
     const x = Math.floor(Math.random() * 2);
     const y = Math.floor(Math.random() * 2);
-    const ability = this.fighter.getAbility(['defence', 'dodge']);
+    const ability = this.fighter.getAbility(["defence", "dodge"]);
 
-    Logger.info('Боец ', this.fighter.name, 'Планирует');
-    Logger.info('Защитить ', this.defenseSections[x][y].title);
+    Logger.info("Боец ", this.fighter.name, "Планирует");
+    Logger.info("Защитить ", this.defenseSections[x][y].title);
 
     if (!ability) {
-      Logger.info('Но не знает подходящей способности');
+      Logger.info("Но не знает подходящей способности");
       return;
-    };
+    }
 
     this.defenseSections[x][y].ability = ability;
+    console.log(this.defenseSections[x][y]);
 
-    Logger.info('Используя ', ability.name)
+    Logger.info("Используя ", ability.name);
   }
 
   requestAttack() {
     const x = Math.floor(Math.random() * 2);
     const y = Math.floor(Math.random() * 2);
-    const ability = this.fighter.getAbility(['attack'])
-
-    Logger.info('Боец ', this.fighter.name, 'Планирует');
-    Logger.info('Атаковать ', this.defenseSections[x][y].title);
+    const ability = this.fighter.getAbility(["attack"]);
+    Logger.info("Боец ", this.fighter.name, "Планирует");
+    Logger.info("Атаковать ", this.attackSections[x][y].title);
 
     if (!ability) {
-      Logger.info('Но не знает подходящей способности');
+      Logger.info("Но не знает подходящей способности");
       return;
-    };
+    }
 
     this.attackSections[x][y].ability = ability;
 
-    Logger.info('Используя ', ability.name)
+    Logger.info("Используя ", ability.name);
   }
 }

@@ -1,3 +1,4 @@
+import { Logger } from "../Logger";
 import { AvailableHealthUnits } from "../types";
 
 export class Health {
@@ -10,6 +11,7 @@ export class Health {
   }
 
   makeDamage(damage: number, unit: AvailableHealthUnits) {
+    Logger.warn("И наносит урон в размере", damage, unit);
     switch (unit) {
       case "percent":
         this.currentValue = Math.floor(

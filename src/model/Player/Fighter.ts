@@ -18,28 +18,35 @@ export class Fighter {
   inventory: Staff[] = [];
   abilities: Ability[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, abilities: Ability[]) {
     this.name = name;
     this.power = getRandom(1, 10);
     this.agility = getRandom(1, 10);
     this.stamina = getRandom(1, 10);
     this.speed = getRandom(1, 10);
     this.luck = getRandom(1, 10);
-    this.health = new Health(getRandom(1, 10));
+    this.health = new Health(getRandom(1, 40));
+    this.abilities = abilities;
 
-    Logger.info('Создан новый боец ', name);
-    Logger.info('Характеристики: ')
-    Logger.info('Здоровье: ', this.health.maxValue);
-    Logger.info('Сила: ', this.power);
-    Logger.info('Ловкость: ', this.agility);
-    Logger.info('Скорость: ', this.speed);
-    Logger.info('Удача: ', this.luck);
+    Logger.info("Создан новый боец ", name);
+    Logger.info("Характеристики: ");
+    Logger.info("Здоровье: ", this.health.maxValue);
+    Logger.info("Сила: ", this.power);
+    Logger.info("Ловкость: ", this.agility);
+    Logger.info("Скорость: ", this.speed);
+    Logger.info("Удача: ", this.luck);
   }
 
   getAbility(types: AbilityType[]) {
-    const availableAbilities = this.abilities.filter(ability => types.includes(ability.type));
-    const amount = availableAbilities.length
-    if (amount <= 0) return 
-    return availableAbilities[getRandom(0, amount - 1)]
+    const availableAbilities = this.abilities.filter((ability) =>
+      types.includes(ability.type)
+    );
+    const amount = availableAbilities.length;
+    if (amount <= 0) return;
+    return availableAbilities[getRandom(0, amount - 1)];
+  }
+
+  addAbilities(abilities: Ability[]) {
+    this.abilities.push(...abilities);
   }
 }
