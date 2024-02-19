@@ -1,5 +1,10 @@
+import { Logger } from "../Logger";
+import { Ability } from "../Player/Ability";
+import { Fighter } from "../Player/Fighter";
+
 export type SectionParams = {
   title: string;
+  ability?: Ability;
 };
 
 const disableField = [
@@ -38,7 +43,7 @@ const disableField = [
   ],
 ];
 
-export type FieldAction;
+export type FieldAction = {}
 
 export type SectionState = [
   [null, null, null],
@@ -47,7 +52,48 @@ export type SectionState = [
 ];
 
 export class Field {
-  sections: SectionParams[][] = disableField;
+  defenseSections: SectionParams[][] = disableField;
+  attackSections: SectionParams[][] = disableField;
+  position: number = 0;
+  fighter: Fighter;
 
-  constructor() {}
+  constructor(fighter: Fighter) {
+    this.fighter = fighter;
+  }
+
+  requestDefense() {
+    const x = Math.floor(Math.random() * 2);
+    const y = Math.floor(Math.random() * 2);
+    const ability = this.fighter.getAbility(['defence', 'dodge']);
+
+    Logger.info('Боец ', this.fighter.name, 'Планирует');
+    Logger.info('Защитить ', this.defenseSections[x][y].title);
+
+    if (!ability) {
+      Logger.info('Но не знает подходящей способности');
+      return;
+    };
+
+    this.defenseSections[x][y].ability = ability;
+
+    Logger.info('Используя ', ability.name)
+  }
+
+  requestAttack() {
+    const x = Math.floor(Math.random() * 2);
+    const y = Math.floor(Math.random() * 2);
+    const ability = this.fighter.getAbility(['attack'])
+
+    Logger.info('Боец ', this.fighter.name, 'Планирует');
+    Logger.info('Атаковать ', this.defenseSections[x][y].title);
+
+    if (!ability) {
+      Logger.info('Но не знает подходящей способности');
+      return;
+    };
+
+    this.attackSections[x][y].ability = ability;
+
+    Logger.info('Используя ', ability.name)
+  }
 }
