@@ -1,3 +1,5 @@
+import './game';
+
 import { Battle } from "./model/Actions/Battle";
 import { Ability, AttackAbility } from "./model/Player/Ability";
 import { Fighter } from "./model/Player/Fighter";
@@ -90,9 +92,9 @@ const cards = [
   }),
 ];
 
-const fighter1 = new Fighter("Иван", cards);
-const fighter2 = new Fighter("Аркадий", cards);
+// const fighter1 = new Fighter("Иван", cards);
+// const fighter2 = new Fighter("Аркадий", cards);
 
-const battle = new Battle(fighter1, fighter2);
+// const battle = new Battle(fighter1, fighter2);
 
-battle.start();
+// battle.start();
