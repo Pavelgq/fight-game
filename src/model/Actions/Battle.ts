@@ -1,7 +1,9 @@
 import { Field } from "../Field/Field";
 import { Logger } from "../Logger";
+import { AttackAbility } from "../Player/Ability";
 import { Fighter } from "../Player/Fighter";
 import { Point } from "../Point";
+import { calculateDamage } from "./DamageCalculator";
 import { Round } from "./Round";
 
 export class Battle {
@@ -65,21 +67,28 @@ export class Battle {
         const attackItem = attackField[i][j];
         const defenceItem = defenseField[i][j];
 
-        if (!attackItem?.ability) continue;
+        const attackAbility = attackItem?.ability;
+        if (!(attackAbility instanceof AttackAbility)) continue;
 
-        const koefAttack = attackItem.ability.checker(
+        const distance = 1; // TODO: брать реальную дистанцию между бойцами
+        const point = new Point(i, j);
+
+        const koefAttack = attackAbility.checker(
           attacking.fighter,
-          1,
-          new Point(i, j)
+          distance,
+          point
         );
         const koefDef = defenceItem?.ability
-          ? defenceItem?.ability.checker(defending.fighter, 1, new Point(i, j))
+          ? defenceItem.ability.checker(defending.fighter, distance, point)
           : 1;
 
         Logger.info(attacking.fighter.name, "аттакует!");
-        //@ts-ignore
-        const damageArray = attackItem.ability.damage;
-        const damage = damageArray[1] * koefAttack * koefDef;
+        const rawDamage = calculateDamage(
+          attackAbility,
+          attacking.fighter,
+          distance
+        );
+        const damage = rawDamage * koefAttack * koefDef;
 
         defending.fighter.health.makeDamage(damage, "point");
       }

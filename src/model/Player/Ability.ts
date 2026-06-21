@@ -4,13 +4,14 @@ import { Fighter } from "./Fighter";
 
 export type AbilityType = "attack" | "defence" | "dodge";
 
-type AbilityCheckerFunc = (
+export type AbilityCheckerFunc = (
   fighter: Fighter,
   distance: number,
   point: Point
 ) => number;
 
 type AbilityConstructorProps = {
+  id: string;
   type: AbilityType;
   name: string;
   availableSector?: AvailableSectionState;
@@ -23,6 +24,7 @@ const DefultAvailableSector: AvailableSectionState = [
   [true, true, true],
 ];
 export class Ability {
+  id: string;
   type: AbilityType;
   name: string;
 
@@ -30,11 +32,13 @@ export class Ability {
   checker: AbilityCheckerFunc;
 
   constructor({
+    id,
     type,
     name,
     availableSector = DefultAvailableSector,
     checker,
   }: AbilityConstructorProps) {
+    this.id = id;
     this.type = type;
     this.name = name;
     this.availableSector = availableSector;
@@ -46,21 +50,33 @@ export class Ability {
   }
 }
 
+/**
+ * Конфиг урона приёма. Только данные — сама формула живёт в DamageCalculator.
+ * base[distance] — базовый урон на дистанции, power/agility — вклад характеристик.
+ * custom — необязательный override для редких уникальных приёмов.
+ */
+export type DamageConfig = {
+  base: number[];
+  power?: number;
+  agility?: number;
+  custom?: (attacker: Fighter, distance: number) => number;
+};
+
 type AttackAbilityConstructorProps = {
-  damage: number[];
-} & AbilityConstructorProps;
+  damage: DamageConfig;
+} & Omit<AbilityConstructorProps, "type">;
 
 export class AttackAbility extends Ability {
-  damage: number[]; //Массив где индекс - расстояние до противника а значение - сила удара
+  damage: DamageConfig;
 
   constructor({
-    type,
+    id,
     name,
     availableSector = DefultAvailableSector,
     checker,
     damage,
   }: AttackAbilityConstructorProps) {
-    super({ type: "attack", name, availableSector, checker });
+    super({ id, type: "attack", name, availableSector, checker });
     this.damage = damage;
   }
 }
