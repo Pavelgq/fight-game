@@ -15,19 +15,19 @@ export const FIGHTING_STYLES: FightingStyle[] = [
     id: "street",
     name: "Уличный",
     description: "Грязная драка: бьёт и уходит с линии атаки",
-    abilityIds: ["simple_punch", "kick", "step_right", "step_left"],
+    abilityIds: ["jab", "knee", "kick", "jump", "duck"],
   },
   {
     id: "karate",
     name: "Карате",
     description: "Удары ногами и уклонения по вертикали",
-    abilityIds: ["kick", "hard_punch", "jump", "duck"],
+    abilityIds: ["kick", "uppercut", "hard_punch", "jump", "weave"],
   },
   {
     id: "boxer",
     name: "Боксёр",
     description: "Серии ударов руками и крепкие блоки",
-    abilityIds: ["simple_punch", "hard_punch", "one_hand_block", "two_hands_block"],
+    abilityIds: ["jab", "simple_punch", "hard_punch", "one_hand_block", "two_hands_block"],
   },
 ];
 
