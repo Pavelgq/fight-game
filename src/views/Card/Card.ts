@@ -91,4 +91,3 @@ export class Card extends GameObjects.Sprite {
     await this.flip()
   }
 }
-}
