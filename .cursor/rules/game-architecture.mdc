@@ -1,0 +1,84 @@
+---
+description: Архитектура fight-game — слои, компоненты, вёрстка отдельно от логики
+alwaysApply: true
+---
+
+# Архитектура fight-game
+
+## Слои проекта
+
+| Слой | Папка | Ответственность |
+|------|-------|-----------------|
+| Логика | `src/model/` | Бойцы, бой, поле, способности — без Phaser |
+| Представление | `src/views/` | Изолированные UI-компоненты (Button, Card) |
+| Композиция | `src/scenes/` | Сборка экрана, навигация между сценами |
+| Вёрстка | `src/layouts/` | Позиции и размеры элементов для экрана |
+| Конфиг | `src/config.ts` | Разрешение, цвета, глобальные константы |
+
+**Логика не знает о вёрстке. Вёрстка не знает о правилах игры.**
+
+## Изолированные компоненты
+
+- Каждый UI-элемент — отдельный класс в `src/views/<Name>/`.
+- Компонент получает данные через props/аргументы, не тянет модель напрямую.
+- Компонент не переключает сцены и не вызывает игровую логику.
+- События наружу — через колбэки или Phaser events (`emit` / `on`).
+
+```typescript
+// ❌ Плохо — логика внутри компонента
+class Button {
+  onClick() { this.scene.start('GameScene'); }
+}
+
+// ✅ Хорошо — компонент только отображает, сцена решает что делать
+button.on('pointerup', () => this.scene.start('PlayerBuildScene'));
+```
+
+## Вёрстка отдельно от логики
+
+- Позиции, отступы, якоря — в `src/layouts/<SceneName>Layout.ts`.
+- Сцена в `create()` вызывает layout и передаёт результат в компоненты.
+- Позже можно заменить layout-слой (desktop → mobile), не трогая `model/` и `views/`.
+
+```typescript
+// src/layouts/MainMenuLayout.ts
+export function getMainMenuLayout(scale: Phaser.Scale.ScaleManager) {
+  const cx = scale.width / 2;
+  return {
+    background: { x: cx, y: scale.height / 2 },
+    buttons: { x: cx, startY: scale.height * 0.42, gap: 20 },
+  };
+}
+
+// src/scenes/MainMenuScene/MainMenuScene.ts
+const layout = getMainMenuLayout(this.scale);
+this.add.image(layout.background.x, layout.background.y, 'background');
+```
+
+## Разрешение и координаты
+
+- Design resolution: **1280×720** (`gameConfig.viewportWidth/Height`).
+- Все координаты — **относительно разрешения**, не абсолютные пиксели.
+- Используй `this.scale.width`, `this.scale.height` или доли (`height * 0.42`).
+- Центр экрана: `width / 2`, `height / 2` — не `640`, `360`.
+
+```typescript
+// ❌ Хардкод
+this.add.image(640, 360, 'background');
+new Button(this, new Point(640, 300), 'Начать игру');
+
+// ✅ Относительно разрешения
+const cx = this.scale.width / 2;
+const cy = this.scale.height / 2;
+this.add.image(cx, cy, 'background');
+new Button(this, new Point(cx, this.scale.height * 0.42), 'Начать игру');
+```
+
+## Навигация между сценами
+
+- Переключение сцен — только в `scenes/`, на событии `pointerup` (не `pointerdown`).
+- Имена сцен — строковые ключи из `super('SceneName')`, регистрировать в `game.ts`.
+
+## Масштабирование (когда понадобится)
+
+Пока верстаем под 1280×720. Для адаптации под разные экраны — `scale.mode: Phaser.Scale.FIT` в `game.ts`. Layout-функции с относительными координатами уже будут готовы к этому.
