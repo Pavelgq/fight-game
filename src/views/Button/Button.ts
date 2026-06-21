@@ -56,7 +56,6 @@ export class Button extends GameObjects.Sprite {
   }
 
   animatedFontSize(target: unknown, currentFontSize: number, targetFontSize: number) {
-    console.log(this.scene.tweens)
     return new Promise((animationResolve) => {
       this.scene.tweens.addCounter({
         duration: 100,
@@ -65,9 +64,9 @@ export class Button extends GameObjects.Sprite {
         to: targetFontSize,
         onUpdate: (tween) => {
             this.textContent?.setFontSize(tween.getValue());
-        }
-    })
-   
+        },
+        onComplete: () => animationResolve(undefined),
+      })
     })
   }
 }

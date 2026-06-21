@@ -1,7 +1,9 @@
 import { Scene } from "phaser";
-import { Button } from "../../views/Button/Button";
-import { Point } from "../../model/Point";
+import { Fighter } from "../../model/Player/Fighter";
 
+type GameSceneData = {
+  fighter?: Fighter;
+};
 
 export class GameScene extends Scene {
 
@@ -9,8 +11,18 @@ export class GameScene extends Scene {
     super('GameScene')
   }
 
-  create() {
-    // const button = new Button(this, new Point(150, 150), "Начать игру");
-    this.scene.start('MainMenuScene')
+  create(data: GameSceneData) {
+    const { width, height } = this.scale;
+    const fighter = data.fighter ?? (this.registry.get("player") as Fighter | undefined);
+
+    this.add.image(width / 2, height / 2, "background");
+
+    const name = fighter?.name ?? "Боец";
+    this.add
+      .text(width / 2, height * 0.1, `В бой: ${name}`, {
+        font: `${Math.round(height * (40 / 720))}px Arial`,
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
   }
 }

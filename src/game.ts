@@ -3,6 +3,7 @@ import { gameConfig } from "./config";
 import { PreloadScene } from "./scenes/PreloadScene/PreloadScene";
 import { GameScene } from "./scenes/GameScene/GameScene";
 import { MainMenuScene } from "./scenes/MainMenuScene/MainMenuScene";
+import { PlayerBuildScene } from "./scenes/PlayerBuildScene/PlayerBuildScene";
 
 const config: Types.Core.GameConfig = {
     type: AUTO,
@@ -12,7 +13,8 @@ const config: Types.Core.GameConfig = {
     scene: [
       PreloadScene,
       GameScene,
-      MainMenuScene
+      MainMenuScene,
+      PlayerBuildScene,
     ]
 };
 
