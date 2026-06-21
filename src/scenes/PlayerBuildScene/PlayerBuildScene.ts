@@ -144,6 +144,6 @@ export class PlayerBuildScene extends Scene {
     );
 
     this.registry.set("player", fighter);
-    this.scene.start("GameScene", { fighter });
+    this.scene.start("RoomScene");
   }
 }
