@@ -1,11 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Fight Game</title>
+    <style>
+        body { margin: 0; background: #1e1e1e; font-family: Arial, sans-serif; }
+        #app { display: flex; align-items: flex-start; }
+        #game { flex: 0 0 auto; }
+        #log-panel {
+            width: 340px;
+            height: 720px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background: #ffffff;
+            color: #1e1e1e;
+            padding: 12px 14px;
+        }
+        #log-panel h3 { margin: 0 0 10px; font-size: 16px; color: #6e2345; }
+        #log-lines .entry { padding: 3px 0; border-bottom: 1px solid #eee; font-size: 13px; line-height: 1.4; }
+        #log-lines .round { font-weight: bold; margin-top: 10px; color: #6e2345; border-bottom: none; }
+        #log-lines .empty { color: #999; font-style: italic; }
+    </style>
 </head>
 <body>
+    <div id="app">
+        <div id="game"></div>
+        <aside id="log-panel">
+            <h3>Лог боя</h3>
+            <div id="log-lines"></div>
+        </aside>
+    </div>
     <script src="bundle.js"></script>
 </body>
 </html>

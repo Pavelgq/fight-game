@@ -10,6 +10,7 @@ const CONSTANTS =  {
 export class Button extends GameObjects.Sprite {
 
   textContent?: GameObjects.Text;
+  private isEnabled = true;
 
   constructor(scene: Scene, point: Point, text: string) {
     super(scene, point.x, point.y, 'button');
@@ -31,6 +32,18 @@ export class Button extends GameObjects.Sprite {
             });
             
     this.textContent.setOrigin(0.5,0.5);
+  }
+
+  setEnabled(enabled: boolean) {
+    if (this.isEnabled === enabled) return;
+    this.isEnabled = enabled;
+    this.setAlpha(enabled ? 1 : 0.4);
+    this.textContent?.setAlpha(enabled ? 1 : 0.5);
+    if (enabled) {
+      this.setInteractive();
+    } else {
+      this.disableInteractive();
+    }
   }
 
   pointerDown() {
