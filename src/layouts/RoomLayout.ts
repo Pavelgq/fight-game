@@ -1,4 +1,4 @@
-import { Scale } from "phaser";
+import { cx, cy, menuButton, type, y } from "../ui/designSystem";
 
 export type RoomMenuItem = {
   label: string;
@@ -13,26 +13,32 @@ export const ROOM_MENU: RoomMenuItem[] = [
   { label: "Колода приёмов", target: "DeckScene" },
 ];
 
-export function getRoomLayout(scale: Scale.ScaleManager) {
-  const { width, height } = scale;
-  const cx = width / 2;
+const TITLE_Y = 70;
+const SUBTITLE_Y = 120;
+const BUTTONS_START_Y = 220;
+const BUTTONS_GAP = 16;
 
+export function getRoomLayout() {
   return {
-    background: { x: cx, y: height / 2 },
+    background: { x: cx, y: cy },
     title: {
       x: cx,
-      y: height * (70 / 720),
-      fontSize: Math.round(height * (40 / 720)),
+      y: y(TITLE_Y),
+      fontSize: type("h1"),
     },
     subtitle: {
       x: cx,
-      y: height * (120 / 720),
-      fontSize: Math.round(height * (22 / 720)),
+      y: y(SUBTITLE_Y),
+      fontSize: type("body"),
     },
     buttons: {
       x: cx,
-      startY: height * (220 / 720),
-      gap: height * (16 / 720),
+      startY: y(BUTTONS_START_Y),
+      gap: y(BUTTONS_GAP),
+      designWidth: menuButton.designWidth,
+      fontSize: menuButton.fontSize,
     },
   };
 }
+
+export type RoomLayout = ReturnType<typeof getRoomLayout>;

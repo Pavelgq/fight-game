@@ -1,21 +1,20 @@
-import { Scale } from "phaser";
+import { battleButton, cx, cy, menuButton, type, y } from "../ui/designSystem";
 
 export const MAIN_MENU_ITEMS = ["Начать игру", "Настройки"] as const;
 
 export type MainMenuItem = (typeof MAIN_MENU_ITEMS)[number];
 
-export function getMainMenuLayout(scale: Scale.ScaleManager) {
-  const { width, height } = scale;
-
+export function getMainMenuLayout() {
   return {
-    background: {
-      x: width / 2,
-      y: height / 2,
-    },
+    background: { x: cx, y: cy },
     buttons: {
-      x: width / 2,
-      startY: height * (300 / 720),
-      gap: height * (20 / 720),
+      x: cx,
+      startY: y(300),
+      gap: y(menuButton.gap),
+      designWidth: menuButton.designWidth,
+      fontSize: menuButton.fontSize,
     },
   };
 }
+
+export type MainMenuLayout = ReturnType<typeof getMainMenuLayout>;

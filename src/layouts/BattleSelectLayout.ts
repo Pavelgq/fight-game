@@ -1,22 +1,33 @@
-import { Scale } from "phaser";
+import { cx, cy, menuButton, type, y } from "../ui/designSystem";
 
-export function getBattleSelectLayout(scale: Scale.ScaleManager) {
-  const { width, height } = scale;
-  const cx = width / 2;
+const TITLE_Y = 70;
+const BATTLES_START_Y = 200;
+const BATTLES_GAP = 18;
+const BACK_Y = 650;
 
+export function getBattleSelectLayout() {
   return {
-    background: { x: cx, y: height / 2 },
+    background: { x: cx, y: cy },
     title: {
       x: cx,
-      y: height * (70 / 720),
-      fontSize: Math.round(height * (40 / 720)),
+      y: y(TITLE_Y),
+      fontSize: type("h1"),
     },
     battles: {
       x: cx,
-      startY: height * (200 / 720),
-      gap: height * (18 / 720),
-      descriptionFontSize: Math.round(height * (18 / 720)),
+      startY: y(BATTLES_START_Y),
+      gap: y(BATTLES_GAP),
+      descriptionFontSize: type("label"),
+      designWidth: menuButton.designWidth,
+      fontSize: menuButton.fontSize,
     },
-    back: { x: cx, y: height * (650 / 720) },
+    back: {
+      x: cx,
+      y: y(BACK_Y),
+      designWidth: menuButton.designWidth,
+      fontSize: menuButton.fontSize,
+    },
   };
 }
+
+export type BattleSelectLayout = ReturnType<typeof getBattleSelectLayout>;

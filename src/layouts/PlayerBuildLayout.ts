@@ -1,40 +1,46 @@
-import { Scale } from "phaser";
 import { Point } from "../model/Point";
+import { cx, cy, menuButton, type, u, x, y } from "../ui/designSystem";
 
-export function getPlayerBuildLayout(scale: Scale.ScaleManager) {
-  const { width, height } = scale;
-  const cx = width / 2;
+const TITLE_Y = 70;
+const NAME_LABEL_Y = 170;
+const NAME_VALUE_Y = 215;
+const STYLES_Y = 380;
+const STYLE_XS = [282, 640, 998] as const;
+const DESCRIPTION_Y = 470;
+const HINT_Y = 560;
+const CONFIRM_Y = 620;
 
-  const styleXs = [width * 0.22, width * 0.5, width * 0.78];
-  const stylesY = height * (380 / 720);
-
+export function getPlayerBuildLayout() {
   return {
-    background: { x: cx, y: height / 2 },
+    background: { x: cx, y: cy },
     title: {
       x: cx,
-      y: height * (70 / 720),
-      fontSize: Math.round(height * (40 / 720)),
+      y: y(TITLE_Y),
+      fontSize: type("h1"),
     },
     nameLabel: {
       x: cx,
-      y: height * (170 / 720),
-      fontSize: Math.round(height * (24 / 720)),
+      y: y(NAME_LABEL_Y),
+      fontSize: type("body"),
     },
     nameValue: {
       x: cx,
-      y: height * (215 / 720),
-      fontSize: Math.round(height * (34 / 720)),
+      y: y(NAME_VALUE_Y),
+      fontSize: u(34),
     },
     styles: {
-      points: styleXs.map((x) => new Point(x, stylesY)),
-      descriptionY: height * (470 / 720),
-      descriptionFontSize: Math.round(height * (22 / 720)),
+      points: STYLE_XS.map((designX) => new Point(x(designX), y(STYLES_Y))),
+      descriptionY: y(DESCRIPTION_Y),
+      descriptionFontSize: type("body"),
+      button: { designWidth: 200, fontSize: 22 },
     },
-    confirm: { x: cx, y: height * (620 / 720) },
+    confirm: { x: cx, y: y(CONFIRM_Y), ...menuButton },
     hint: {
       x: cx,
-      y: height * (560 / 720),
-      fontSize: Math.round(height * (22 / 720)),
+      y: y(HINT_Y),
+      fontSize: type("body"),
     },
   };
 }
+
+export type PlayerBuildLayout = ReturnType<typeof getPlayerBuildLayout>;
