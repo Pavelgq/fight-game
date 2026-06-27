@@ -8,13 +8,13 @@ export type ZoneGuard = (row: number, col: number) => boolean;
 
 /**
  * Конфиг урона приёма. Только данные — формула в DamageCalculator.
- * base[distance] — урон на дистанции; 0 означает «не достаёт» на этой дистанции.
+ * base — скалярный базовый урон приёма (дальнобойность задаётся отдельно `reach`).
  */
 export type DamageConfig = {
-  base: number[];
+  base: number;
   power?: number;
   agility?: number;
-  custom?: (attacker: Fighter, distance: number) => number;
+  custom?: (attacker: Fighter) => number;
 };
 
 type AbilityConstructorProps = {
@@ -70,18 +70,34 @@ export class Ability {
 
 type AttackAbilityConstructorProps = {
   damage: DamageConfig;
+  /**
+   * Дальнобойность в столбцах от собственной стойки атакующего:
+   * 0 — только свой столбец, 1 — свой и соседний, 2 — любой столбец.
+   */
+  reach: number;
 } & Omit<AbilityConstructorProps, "type" | "guard" | "block">;
 
 export class AttackAbility extends Ability {
   damage: DamageConfig;
+  /** Сколько столбцов от своей стойки достаёт атака (0/1/2). */
+  reach: number;
 
-  constructor({ damage, ...rest }: AttackAbilityConstructorProps) {
+  constructor({ damage, reach, ...rest }: AttackAbilityConstructorProps) {
     super({ type: "attack", ...rest });
     this.damage = damage;
+    this.reach = reach;
   }
 
-  /** Достаёт ли приём соперника на данной дистанции. */
-  reaches(distance: number) {
-    return (this.damage.base[distance] ?? 0) > 0;
+  /** Базовый урон без учёта характеристик (для отображения на карте). */
+  get baseDamage(): number {
+    return this.damage.base;
+  }
+
+  /**
+   * Достаёт ли атака столбец `targetCol`, стоя в стойке `attackerStance`.
+   * Зависит только от разницы столбцов и `reach`.
+   */
+  canReachColumn(attackerStance: number, targetCol: number): boolean {
+    return Math.abs(targetCol - attackerStance) <= this.reach;
   }
 }

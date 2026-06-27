@@ -2,7 +2,8 @@ import { Defense } from "./Defense";
 import { Health } from "./Health";
 import { Staff } from "./Staff";
 import { Ability, AbilityType } from "./Ability";
-import { getRandom } from "../../utils/common";
+import { FighterStatsDTO } from "../Battle/matchTypes";
+import { Rng, defaultRng } from "../Rng";
 import { Logger } from "../Logger";
 
 export class Fighter {
@@ -18,14 +19,21 @@ export class Fighter {
   inventory: Staff[] = [];
   abilities: Ability[] = [];
 
-  constructor(name: string, abilities: Ability[]) {
+  constructor(
+    name: string,
+    abilities: Ability[],
+    stats?: Partial<FighterStatsDTO>,
+    private readonly rng: Rng = defaultRng
+  ) {
     this.name = name;
-    this.power = getRandom(1, 10);
-    this.agility = getRandom(1, 10);
-    this.stamina = getRandom(1, 10);
-    this.speed = getRandom(1, 10);
-    this.luck = getRandom(1, 10);
-    this.health = new Health(getRandom(1, 40));
+    this.power = stats?.power ?? rng.nextInt(1, 10);
+    this.agility = stats?.agility ?? rng.nextInt(1, 10);
+    this.stamina = stats?.stamina ?? rng.nextInt(1, 10);
+    this.speed = stats?.speed ?? rng.nextInt(1, 10);
+    this.luck = stats?.luck ?? rng.nextInt(1, 10);
+    // Стабильное здоровье, привязанное к стамине: без рандома 1–40,
+    // чтобы не было нокаутов с первого раунда (диапазон ~64–100).
+    this.health = new Health(60 + this.stamina * 4);
     this.abilities = abilities;
 
     Logger.info("Создан новый боец ", name);
@@ -43,7 +51,7 @@ export class Fighter {
     );
     const amount = availableAbilities.length;
     if (amount <= 0) return;
-    return availableAbilities[getRandom(0, amount - 1)];
+    return availableAbilities[this.rng.nextInt(0, amount - 1)];
   }
 
   addAbilities(abilities: Ability[]) {

@@ -6,6 +6,8 @@ type AttackInput = {
   name: string;
   speed: number;
   damage: DamageConfig;
+  /** Дальнобойность в столбцах от своей стойки: 0 — свой, 1 — соседний, 2 — любой. */
+  reach: number;
   availableSector?: AvailableSectionState;
 };
 
@@ -24,7 +26,7 @@ type DodgeInput = {
   guard: ZoneGuard;
 };
 
-/** Атака: наносит урон по зоне соперника, если достаёт по дистанции. */
+/** Атака: наносит урон по столбцу соперника, если достаёт по стойке (reach). */
 export const attack = (props: AttackInput) => new AttackAbility(props);
 
 /** Защита (блок): гасит урон по защищаемой клетке коэффициентом block. */

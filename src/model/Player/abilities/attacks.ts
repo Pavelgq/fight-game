@@ -13,44 +13,54 @@ const upperOnly: AvailableSectionState = [
   [false, false, false],
 ];
 
+// Архетипы по «цене» времени:
+//  быстрые (speed 2): малый урон, ближняя дальность (reach 0–1);
+//  обычные (speed 3): средний урон, reach 1;
+//  тяжёлые (speed 4–5): высокий урон, дальнобойные (reach 2).
 export const attacks = [
   attack({
     id: "jab",
     name: "Джеб",
-    speed: 1,
-    damage: { base: [3, 1, 0, 0, 0], power: 0.3 },
-  }),
-  attack({
-    id: "simple_punch",
-    name: "Простой удар",
     speed: 2,
-    damage: { base: [2, 3, 2, 0, 0], power: 0.5 },
-  }),
-  attack({
-    id: "hard_punch",
-    name: "Сложный удар",
-    speed: 3,
-    damage: { base: [0, 2, 3, 1, 0], power: 0.7 },
-  }),
-  attack({
-    id: "uppercut",
-    name: "Апперкот",
-    speed: 3,
-    availableSector: upperOnly,
-    damage: { base: [0, 3, 2, 0, 0], power: 0.8 },
+    reach: 1,
+    damage: { base: 4, power: 0.3 },
   }),
   attack({
     id: "knee",
     name: "Колено",
     speed: 2,
+    reach: 0,
     availableSector: noHead,
-    damage: { base: [3, 2, 0, 0, 0], power: 0.6 },
+    damage: { base: 5, power: 0.6 },
+  }),
+  attack({
+    id: "simple_punch",
+    name: "Простой удар",
+    speed: 3,
+    reach: 1,
+    damage: { base: 7, power: 0.5 },
+  }),
+  attack({
+    id: "uppercut",
+    name: "Апперкот",
+    speed: 3,
+    reach: 0,
+    availableSector: upperOnly,
+    damage: { base: 8, power: 0.8 },
+  }),
+  attack({
+    id: "hard_punch",
+    name: "Сложный удар",
+    speed: 4,
+    reach: 2,
+    damage: { base: 10, power: 0.7 },
   }),
   attack({
     id: "kick",
     name: "Пинок",
-    speed: 3,
+    speed: 5,
+    reach: 2,
     availableSector: noHead,
-    damage: { base: [0, 1, 2, 3, 2], power: 0.4, agility: 0.3 },
+    damage: { base: 12, power: 0.4, agility: 0.3 },
   }),
 ];

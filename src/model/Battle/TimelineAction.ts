@@ -1,6 +1,6 @@
 import { Ability } from "../Player/Ability";
 
-export type StepDirection = 1 | -1; // +1 — вперёд (к сопернику), -1 — назад
+export type StepDirection = 1 | -1; // +1 — шаг вправо, -1 — шаг влево (смена стойки)
 
 export type TimelineAction =
   | {
@@ -18,7 +18,7 @@ export type TimelineAction =
 
 export function actionLabel(action: TimelineAction): string {
   if (action.kind === "step") {
-    return action.direction === 1 ? "Шаг вперёд" : "Шаг назад";
+    return action.direction === 1 ? "Шаг вправо" : "Шаг влево";
   }
   return action.ability.name;
 }
