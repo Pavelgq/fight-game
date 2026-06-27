@@ -9,13 +9,25 @@ alwaysApply: true
 
 | Слой | Папка | Ответственность |
 |------|-------|-----------------|
-| Логика | `src/model/` | Бойцы, бой, поле, способности — без Phaser |
-| Представление | `src/views/` | Изолированные UI-компоненты (Button, Card) |
-| Композиция | `src/scenes/` | Сборка экрана, навигация между сценами |
+| Логика | `src/model/` | Правила, бой, способности, симуляция — без Phaser |
+| Сессия | `src/session/` | Профиль игрока, сохранения, матч вне Phaser (`GameSession`) |
+| Представление | `src/views/` | Изолированные UI-компоненты (Button, Card, Grid) |
+| Экраны | `src/screens/` | Композиция экрана: mount + refresh (`BattleScreen`) |
+| Контроллеры | `src/controllers/` | Связка input ↔ модель (без цветов и шрифтов) |
+| Композиция | `src/scenes/` | Phaser lifecycle, навигация между сценами |
 | Вёрстка | `src/layouts/` | Позиции и размеры элементов для экрана |
+| UI-утилиты | `src/ui/` | Design system, превью, визуальные маппинги |
 | Конфиг | `src/config.ts` | Разрешение, цвета, глобальные константы |
 
 **Логика не знает о вёрстке. Вёрстка не знает о правилах игры.**
+
+## Игровое состояние
+
+- **Источник истины** — `GameSession` (`src/session/GameSession.ts`), не Phaser Registry.
+- **Профиль** — `FighterProfile` (мета-персонаж, сериализуемый DTO).
+- **Матч** — `BattleSession` + `MatchStateDTO` (снимок для сохранения/сети).
+- **Симуляция** — `resolveRound()` чистая; `applyRoundResult()` применяет урон.
+- **Команды** — UI шлёт `PlayerCommand` в `BattleSession.apply()`, не мутирует модель напрямую.
 
 ## Изолированные компоненты
 
@@ -34,51 +46,31 @@ class Button {
 button.on('pointerup', () => this.scene.start('PlayerBuildScene'));
 ```
 
+## Контроллеры и экраны
+
+- **Screen** (`screens/`) — собирает views, отдаёт `refresh(state)`, не знает правил боя.
+- **Controller** (`controllers/`) — обрабатывает клики по полю, вызывает колбэки; цвета передаются снаружи (`tagFillForType`), не импортируются из views.
+- **Scene** — тонкий адаптер: `BattleSession` + `BattleScreen` + навигация.
+
 ## Вёрстка отдельно от логики
 
 - Позиции, отступы, якоря — в `src/layouts/<SceneName>Layout.ts`.
 - Сцена в `create()` вызывает layout и передаёт результат в компоненты.
 - Позже можно заменить layout-слой (desktop → mobile), не трогая `model/` и `views/`.
 
-```typescript
-// src/layouts/MainMenuLayout.ts
-export function getMainMenuLayout(scale: Phaser.Scale.ScaleManager) {
-  const cx = scale.width / 2;
-  return {
-    background: { x: cx, y: scale.height / 2 },
-    buttons: { x: cx, startY: scale.height * 0.42, gap: 20 },
-  };
-}
+## Разрешение и масштабирование
 
-// src/scenes/MainMenuScene/MainMenuScene.ts
-const layout = getMainMenuLayout(this.scale);
-this.add.image(layout.background.x, layout.background.y, 'background');
-```
-
-## Разрешение и координаты
-
-- Design resolution: **1280×720** (`gameConfig.viewportWidth/Height`).
-- Все координаты — **относительно разрешения**, не абсолютные пиксели.
-- Используй `this.scale.width`, `this.scale.height` или доли (`height * 0.42`).
-- Центр экрана: `width / 2`, `height / 2` — не `640`, `360`.
-
-```typescript
-// ❌ Хардкод
-this.add.image(640, 360, 'background');
-new Button(this, new Point(640, 300), 'Начать игру');
-
-// ✅ Относительно разрешения
-const cx = this.scale.width / 2;
-const cy = this.scale.height / 2;
-this.add.image(cx, cy, 'background');
-new Button(this, new Point(cx, this.scale.height * 0.42), 'Начать игру');
-```
+- **Design resolution:** 1280×720 — все координаты в `layouts/` и `designSystem.ts`.
+- **Phaser `Scale.FIT`** — равномерный масштаб под окно, letterbox по краям.
+- **HiDPI:** внутренний буфер `1280×dpr × 720×dpr` (`CANVAS` в `designSystem.ts`), вёрстка в design-пикселях через `x()` / `y()` / `u()`.
+- Центр экрана: `cx` / `cy` из `designSystem.ts`.
 
 ## Навигация между сценами
 
 - Переключение сцен — только в `scenes/`, на событии `pointerup` (не `pointerdown`).
 - Имена сцен — строковые ключи из `super('SceneName')`, регистрировать в `game.ts`.
+- Данные между сценами — через `GameSession`, не `this.registry`.
 
-## Масштабирование (когда понадобится)
+## Масштабирование
 
-Пока верстаем под 1280×720. Для адаптации под разные экраны — `scale.mode: Phaser.Scale.FIT` в `game.ts`. Layout-функции с относительными координатами уже будут готовы к этому.
+Игра использует **Phaser Scale.FIT** + design canvas 1280×720. Layout-функции не пересчитываются при resize окна.

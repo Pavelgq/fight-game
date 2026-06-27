@@ -1,0 +1,14 @@
+# graphify: build a code-only graph (no LLM key / no data sent to any API)
+
+# build artifacts / deps
+node_modules/
+dist/
+build/
+
+# image assets (game art, not semantic source)
+assets/
+
+# docs & rules that would require semantic (LLM) extraction
+*.md
+*.mdc
+.cursor/
