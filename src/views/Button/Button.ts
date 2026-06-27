@@ -1,37 +1,56 @@
 import { GameObjects, Scene } from "phaser";
 import { Point } from "../../model/Point";
+import { applyTextResolution } from "../../ui/displayScale";
+import { u } from "../../ui/designSystem";
+import { FONT_DISPLAY } from "../theme";
 
-const CONSTANTS =  {
-  BASE_SCALE: 1,
-  HOVER_SCALE: 0.9,
-  BASE_FONT_SIZE: 28
-}
+export type ButtonOptions = {
+  /** Ширина кнопки в design-пикселях (1280×720). */
+  designWidth?: number;
+  /** Размер шрифта в design-пикселях. */
+  fontSize?: number;
+};
+
+const DEFAULT_DESIGN_WIDTH = 300;
+const DEFAULT_FONT_SIZE = 28;
 
 export class Button extends GameObjects.Sprite {
-
   textContent?: GameObjects.Text;
   private isEnabled = true;
+  private readonly baseScale: number;
+  private readonly baseFontSize: number;
+  private readonly pressScale: number;
 
-  constructor(scene: Scene, point: Point, text: string) {
-    super(scene, point.x, point.y, 'button');
-    
+  constructor(scene: Scene, point: Point, text: string, options: ButtonOptions = {}) {
+    super(scene, point.x, point.y, "button");
+
+    const designWidth = options.designWidth ?? DEFAULT_DESIGN_WIDTH;
+    this.baseFontSize = u(options.fontSize ?? DEFAULT_FONT_SIZE);
+    this.baseScale = u(designWidth) / this.width;
+    this.pressScale = this.baseScale * 0.94;
+
     this.scene.add.existing(this);
-    this.addTest(text);
-    this.setScale(CONSTANTS.BASE_SCALE)
-    this.setInteractive()
-    this.on('pointerdown', this.pointerDown, this)
-    this.on('pointerup', this.pointerUp, this)
+    this.addLabel(text, designWidth);
+    this.setScale(this.baseScale);
+    this.setInteractive();
+    this.on("pointerdown", this.pointerDown, this);
+    this.on("pointerup", this.pointerUp, this);
   }
 
-  private addTest(text: string) {
-    const width = this.width * CONSTANTS.BASE_SCALE;
-    const height = this.height * CONSTANTS.BASE_SCALE;
+  /** Высота кнопки с учётом масштаба (для расчёта gap в меню). */
+  get layoutHeight(): number {
+    return this.displayHeight;
+  }
+
+  private addLabel(text: string, designWidth: number) {
     this.textContent = this.scene.add.text(this.x, this.y, text, {
-                font: `${CONSTANTS.BASE_FONT_SIZE}px Arial`,
-                color: '#ffffff'
-            });
-            
-    this.textContent.setOrigin(0.5,0.5);
+      font: `${this.baseFontSize}px ${FONT_DISPLAY}`,
+      color: "#ffffff",
+      align: "center",
+      wordWrap: { width: u(designWidth) - u(24) },
+    });
+    this.textContent.setOrigin(0.5, 0.5);
+    applyTextResolution(this.textContent);
   }
 
   setEnabled(enabled: boolean) {
@@ -47,39 +66,37 @@ export class Button extends GameObjects.Sprite {
   }
 
   pointerDown() {
-    this.animatedScale(this, CONSTANTS.HOVER_SCALE);
-    this.textContent && this.animatedFontSize(this.textContent, CONSTANTS.BASE_FONT_SIZE, CONSTANTS.BASE_FONT_SIZE - 3);
+    this.tweenScale(this.pressScale);
+    if (this.textContent) {
+      this.tweenFontSize(this.baseFontSize, Math.round(this.baseFontSize * 0.92));
+    }
   }
 
   pointerUp() {
-    this.animatedScale(this, CONSTANTS.BASE_SCALE);
-    this.textContent && this.animatedFontSize(this.textContent, CONSTANTS.BASE_FONT_SIZE - 3, CONSTANTS.BASE_FONT_SIZE);
+    this.tweenScale(this.baseScale);
+    if (this.textContent) {
+      this.tweenFontSize(Math.round(this.baseFontSize * 0.92), this.baseFontSize);
+    }
   }
 
-  animatedScale(target: unknown, param: number) {
-    return new Promise((animationResolve) => {
-      this.scene.tweens.add({
-        targets: target,
-        ease: 'Linear',
-        duration: 100,
-        scale: param,
-        onComplete: animationResolve,
-      })
-    })
+  private tweenScale(targetScale: number) {
+    this.scene.tweens.add({
+      targets: this,
+      scale: targetScale,
+      duration: 90,
+      ease: "Quad.easeOut",
+    });
   }
 
-  animatedFontSize(target: unknown, currentFontSize: number, targetFontSize: number) {
-    return new Promise((animationResolve) => {
-      this.scene.tweens.addCounter({
-        duration: 100,
-        ease: 'Linear',
-        from: currentFontSize,
-        to: targetFontSize,
-        onUpdate: (tween) => {
-            this.textContent?.setFontSize(tween.getValue());
-        },
-        onComplete: () => animationResolve(undefined),
-      })
-    })
+  private tweenFontSize(from: number, to: number) {
+    this.scene.tweens.addCounter({
+      from,
+      to,
+      duration: 90,
+      ease: "Quad.easeOut",
+      onUpdate: (tween) => {
+        this.textContent?.setFontSize(tween.getValue());
+      },
+    });
   }
 }

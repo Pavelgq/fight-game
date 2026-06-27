@@ -1,7 +1,8 @@
 import { GameObjects, Scene } from "phaser";
+import { FONT, palette } from "../theme";
 
-const BG_COLOR = 0x333333;
-const FILL_COLOR = 0xe74c3c;
+const BG_COLOR = palette.panelDeep;
+const FILL_COLOR = 0xe04848;
 
 export class HealthBar extends GameObjects.Container {
   private fill: GameObjects.Rectangle;
@@ -23,7 +24,8 @@ export class HealthBar extends GameObjects.Container {
 
     const bg = scene.add
       .rectangle(0, 0, width, height, BG_COLOR)
-      .setOrigin(0, 0.5);
+      .setOrigin(0, 0.5)
+      .setStrokeStyle(2, palette.panelStroke);
 
     this.fill = scene.add
       .rectangle(0, 0, width, height, FILL_COLOR)
@@ -31,10 +33,11 @@ export class HealthBar extends GameObjects.Container {
 
     this.text = scene.add
       .text(width / 2, 0, label, {
-        font: `${Math.round(height * 0.7)}px Arial`,
+        font: `${Math.round(height * 0.7)}px ${FONT}`,
         color: "#ffffff",
       })
       .setOrigin(0.5);
+    this.text.setShadow(0, 1, "#000000", 3);
 
     this.add([bg, this.fill, this.text]);
     scene.add.existing(this);
