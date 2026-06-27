@@ -8,7 +8,7 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     create() {
-        const layout = getMainMenuLayout(this.scale);
+        const layout = getMainMenuLayout();
 
         this.add.image(layout.background.x, layout.background.y, 'background');
         this.createMenu(layout);
@@ -19,8 +19,11 @@ export class MainMenuScene extends Phaser.Scene {
 
         MAIN_MENU_ITEMS.forEach((item) => {
             const y = layout.buttons.startY + offsetY;
-            const button = new Button(this, new Point(layout.buttons.x, y), item);
-            offsetY += button.height + layout.buttons.gap;
+            const button = new Button(this, new Point(layout.buttons.x, y), item, {
+                designWidth: layout.buttons.designWidth,
+                fontSize: layout.buttons.fontSize,
+            });
+            offsetY += button.layoutHeight + layout.buttons.gap;
 
             button.on('pointerup', () => this.handleMenuItem(item));
         });

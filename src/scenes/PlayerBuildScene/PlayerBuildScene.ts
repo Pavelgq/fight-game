@@ -7,7 +7,8 @@ import {
   FightingStyle,
   getStyleAbilities,
 } from "../../model/Player/FightingStyle";
-import { Fighter } from "../../model/Player/Fighter";
+import { FighterProfile } from "../../model/Player/FighterProfile";
+import { GameSession } from "../../session/GameSession";
 
 const MAX_NAME_LENGTH = 14;
 const SELECTED_TINT = 0xffe066;
@@ -30,7 +31,7 @@ export class PlayerBuildScene extends Scene {
     this.selectedStyle = undefined;
     this.styleButtons = [];
 
-    const layout = getPlayerBuildLayout(this.scale);
+    const layout = getPlayerBuildLayout();
 
     this.add.image(layout.background.x, layout.background.y, "background");
 
@@ -80,7 +81,7 @@ export class PlayerBuildScene extends Scene {
   private createStyleButtons(layout: ReturnType<typeof getPlayerBuildLayout>) {
     FIGHTING_STYLES.forEach((style, index) => {
       const point = layout.styles.points[index];
-      const button = new Button(this, point, style.name);
+      const button = new Button(this, point, style.name, layout.styles.button);
       button.on("pointerup", () => this.selectStyle(style));
       this.styleButtons.push(button);
     });
@@ -88,7 +89,10 @@ export class PlayerBuildScene extends Scene {
 
   private createConfirmButton(layout: ReturnType<typeof getPlayerBuildLayout>) {
     const point = new Point(layout.confirm.x, layout.confirm.y);
-    const button = new Button(this, point, "Создать бойца");
+    const button = new Button(this, point, "Создать бойца", {
+      designWidth: layout.confirm.designWidth,
+      fontSize: layout.confirm.fontSize,
+    });
     button.on("pointerup", () => this.confirm());
   }
 
@@ -138,12 +142,14 @@ export class PlayerBuildScene extends Scene {
       return;
     }
 
-    const fighter = new Fighter(
+    const profile = new FighterProfile(
       this.playerName.trim(),
-      getStyleAbilities(this.selectedStyle)
+      this.selectedStyle.abilityIds,
+      undefined,
+      this.selectedStyle.id
     );
 
-    this.registry.set("player", fighter);
+    GameSession.get().setPlayer(profile);
     this.scene.start("RoomScene");
   }
 }

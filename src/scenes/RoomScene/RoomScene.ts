@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import { Point } from "../../model/Point";
 import { getRoomLayout, ROOM_MENU } from "../../layouts/RoomLayout";
 import { Button } from "../../views/Button/Button";
-import { Fighter } from "../../model/Player/Fighter";
+import { GameSession } from "../../session/GameSession";
 
 export class RoomScene extends Scene {
   constructor() {
@@ -10,7 +10,7 @@ export class RoomScene extends Scene {
   }
 
   create() {
-    const layout = getRoomLayout(this.scale);
+    const layout = getRoomLayout();
 
     this.add.image(layout.background.x, layout.background.y, "background");
 
@@ -21,7 +21,7 @@ export class RoomScene extends Scene {
       })
       .setOrigin(0.5);
 
-    const player = this.registry.get("player") as Fighter | undefined;
+    const player = GameSession.get().getPlayerProfile();
     this.add
       .text(layout.subtitle.x, layout.subtitle.y, player?.name ?? "Безымянный боец", {
         font: `${layout.subtitle.fontSize}px Arial`,
@@ -37,8 +37,11 @@ export class RoomScene extends Scene {
 
     ROOM_MENU.forEach((item) => {
       const y = layout.buttons.startY + offsetY;
-      const button = new Button(this, new Point(layout.buttons.x, y), item.label);
-      offsetY += button.height + layout.buttons.gap;
+      const button = new Button(this, new Point(layout.buttons.x, y), item.label, {
+        designWidth: layout.buttons.designWidth,
+        fontSize: layout.buttons.fontSize,
+      });
+      offsetY += button.layoutHeight + layout.buttons.gap;
 
       button.on("pointerup", () => this.scene.start(item.target));
     });
