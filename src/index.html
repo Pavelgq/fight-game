@@ -5,31 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fight Game</title>
     <style>
-        body { margin: 0; background: #1e1e1e; font-family: Arial, sans-serif; }
-        #app { display: flex; align-items: flex-start; }
-        #game { flex: 0 0 auto; }
-        #log-panel {
-            width: 340px;
-            height: 720px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            background: #ffffff;
-            color: #1e1e1e;
-            padding: 12px 14px;
+        html, body { margin: 0; height: 100%; background: #0e1116; overflow: hidden; }
+        #app {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
         }
-        #log-panel h3 { margin: 0 0 10px; font-size: 16px; color: #6e2345; }
-        #log-lines .entry { padding: 3px 0; border-bottom: 1px solid #eee; font-size: 13px; line-height: 1.4; }
-        #log-lines .round { font-weight: bold; margin-top: 10px; color: #6e2345; border-bottom: none; }
-        #log-lines .empty { color: #999; font-style: italic; }
+        #game {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0e1116;
+        }
+        #game canvas { display: block; }
+        #log-panel {
+            width: 280px;
+            flex-shrink: 0;
+            background: #141a22;
+            color: #c8d0dc;
+            font: 13px/1.4 system-ui, sans-serif;
+            overflow-y: auto;
+            border-left: 1px solid #2a3340;
+            padding: 8px 10px;
+            box-sizing: border-box;
+        }
+        #log-lines .entry { margin-bottom: 4px; }
+        #log-lines .entry.round {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #ffd700;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <div id="game"></div>
-        <aside id="log-panel">
-            <h3>Лог боя</h3>
+        <div id="log-panel">
             <div id="log-lines"></div>
-        </aside>
+        </div>
     </div>
     <script src="bundle.js"></script>
 </body>

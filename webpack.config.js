@@ -26,6 +26,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.(woff2?|ttf|otf|eot)$/i,
+        type: "asset/resource",
+      },
+      {
         test: /\.tsx?$/,
         use: "ts-loader",
         exclude: /node_modules/,
