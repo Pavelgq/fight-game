@@ -1,7 +1,7 @@
 {
   "name": "fight-game",
   "version": "1.0.0",
-  "description": "",
+  "description": "Turn-based card battler prototype with timeline combat, built with Phaser 3 and TypeScript",
   "main": "./src/index.js",
   "scripts": {
     "develop": "webpack-dev-server --mode development",
@@ -9,6 +9,19 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pavelgq/fight-game.git"
+  },
+  "keywords": [
+    "phaser",
+    "phaser3",
+    "typescript",
+    "game",
+    "card-battler",
+    "turn-based",
+    "fighting-game"
+  ],
   "author": "Pavel Gordeev <pavelgq@yandex.ru>",
   "license": "ISC",
   "devDependencies": {
