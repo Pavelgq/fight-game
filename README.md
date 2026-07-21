@@ -7,6 +7,18 @@ Plan attacks and movement on a timeline, position your fighter on a 3×3 grid, t
 
 > Work in progress — mechanics and UI evolve quickly. Issues and PRs are welcome.
 
+## Status & roadmap
+
+**Current:** client-only MVP. The AI opponent and all rules run in the browser (`src/model/`); there is no backend and no persistence beyond local session state.
+
+**Planned:**
+
+- Server-authoritative multiplayer (move round resolution from client to a trusted server)
+- Persistent player profiles/progression (currently in-memory only, see `src/session/GameSession.ts`)
+- Content growth: more abilities, opponents, and the remaining screens (see [open issues](https://github.com/Pavelgq/fight-game/issues))
+
+The server work will likely land as a second package (e.g. `packages/client` + `packages/server`) once it actually starts — no monorepo scaffolding exists yet, on purpose, since there's nothing to share between packages today.
+
 ## Features
 
 - **Timeline combat** — queue abilities and stance steps within a per-round time budget
@@ -15,6 +27,19 @@ Plan attacks and movement on a timeline, position your fighter on a 3×3 grid, t
 - **Pure game model** — battle logic lives in `src/model/` with Vitest coverage, no Phaser dependency
 - **Layered UI** — isolated views, layout functions, screens and thin Phaser scenes
 - **Design resolution** — 1280×720 layout with `Scale.FIT` and HiDPI canvas support
+
+## Game design
+
+Two fighters take turns **planning**, not fighting in real time. Each round:
+
+1. **Plan** — you build a timeline of ability cards and stance steps (left/center/right) within a per-round time budget; the AI opponent does the same.
+2. **Simulate** — the engine resolves both timelines in time order: hits land based on stance, reach, and the 3×3 head/body/legs × left/center/right grid; blocks, dodges and interrupts can cancel a strike.
+3. **Playback** — watch both timelines side by side with hit markers and damage.
+4. **Cleanup** — HP updates, stances reset, hands redraw, next round begins.
+
+It plays like a mix of a fighting game's spacing/reach reads and a card game's hand/resource management, resolved deterministically instead of live.
+
+Full rules: [docs/GAME_DESIGN.en.md](docs/GAME_DESIGN.en.md) · Balance constants (maintainers): [.cursor/rules/battle-mechanics.mdc](.cursor/rules/battle-mechanics.mdc)
 
 ## Quick start
 
@@ -60,15 +85,6 @@ src/
 ```
 
 See [docs/ARCHITECTURE.en.md](docs/ARCHITECTURE.en.md) for layer boundaries and conventions.
-
-## Game design
-
-Round flow: **plan** → **ready** → **simulate** → **playback** → next round.
-
-Both fighters build a timeline of abilities and stance steps, then the engine resolves hits, blocks, dodges and interrupts in time order.
-
-Overview: [docs/GAME_DESIGN.en.md](docs/GAME_DESIGN.en.md)  
-Detailed balance notes (maintainers): [.cursor/rules/battle-mechanics.mdc](.cursor/rules/battle-mechanics.mdc)
 
 ## Contributing
 
