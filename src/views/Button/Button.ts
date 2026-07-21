@@ -95,7 +95,8 @@ export class Button extends GameObjects.Sprite {
       duration: 90,
       ease: "Quad.easeOut",
       onUpdate: (tween) => {
-        this.textContent?.setFontSize(tween.getValue());
+        const value = tween.getValue();
+        if (value !== null) this.textContent?.setFontSize(value);
       },
     });
   }

@@ -244,7 +244,7 @@ export class RoundPlayback extends GameObjects.Container {
       to: this.maxTime,
       duration: Math.max(800, this.maxTime * 240),
       onUpdate: (tween) => {
-        const t = tween.getValue();
+        const t = tween.getValue() ?? 0;
         this.playhead.x = this.timeToX(t);
         this.revealUntil(t);
       },
