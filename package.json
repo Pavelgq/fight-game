@@ -14,7 +14,7 @@
     "url": "https://github.com/Pavelgq/fight-game.git"
   },
   "engines": {
-    "node": ">=19"
+    "node": ">=22.12"
   },
   "keywords": [
     "phaser",

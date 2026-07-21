@@ -7,7 +7,7 @@
 ## Настройка окружения
 
 1. Сделай fork и клонируй репозиторий
-2. Node.js **19+** (`nvm use` читает [`.nvmrc`](.nvmrc))
+2. Node.js **22.12+** (`nvm use` читает [`.nvmrc`](.nvmrc))
 3. `npm install`
 4. `npm run develop` — игра на [http://localhost:4000](http://localhost:4000)
 

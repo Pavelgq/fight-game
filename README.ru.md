@@ -43,7 +43,7 @@
 
 ## Быстрый старт
 
-**Нужно:** Node.js 19+ ([`.nvmrc`](.nvmrc))
+**Нужно:** Node.js 22.12+ ([`.nvmrc`](.nvmrc))
 
 ```bash
 git clone https://github.com/Pavelgq/fight-game.git

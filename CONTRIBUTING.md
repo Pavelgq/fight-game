@@ -7,7 +7,7 @@ Thank you for your interest in the project! This document explains how to set up
 ## Development setup
 
 1. Fork and clone the repository
-2. Use Node.js **19+** (`nvm use` reads [`.nvmrc`](.nvmrc))
+2. Use Node.js **22.12+** (`nvm use` reads [`.nvmrc`](.nvmrc))
 3. `npm install`
 4. `npm run develop` — game at [http://localhost:4000](http://localhost:4000)
 

@@ -43,7 +43,7 @@ Full rules: [docs/GAME_DESIGN.en.md](docs/GAME_DESIGN.en.md) · Balance constant
 
 ## Quick start
 
-**Requirements:** Node.js 19+ (see [`.nvmrc`](.nvmrc))
+**Requirements:** Node.js 22.12+ (see [`.nvmrc`](.nvmrc))
 
 ```bash
 git clone https://github.com/Pavelgq/fight-game.git
