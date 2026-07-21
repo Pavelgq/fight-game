@@ -8,6 +8,7 @@ import { PlayerBuildScene } from "./scenes/PlayerBuildScene/PlayerBuildScene";
 import { RoomScene } from "./scenes/RoomScene/RoomScene";
 import { BattleSelectScene } from "./scenes/BattleSelectScene/BattleSelectScene";
 import { BattleScene } from "./scenes/BattleScene/BattleScene";
+import { CharacterInfoScene } from "./scenes/CharacterInfoScene/CharacterInfoScene";
 import { StubScene } from "./scenes/StubScene/StubScene";
 
 const dpr = getDisplayPixelRatio();
@@ -36,11 +37,11 @@ const config: Types.Core.GameConfig = {
     RoomScene,
     BattleSelectScene,
     BattleScene,
+    CharacterInfoScene,
 
     new StubScene("TrainerScene", "Тренер"),
     new StubScene("TrainerSelectScene", "Выбор тренера"),
     new StubScene("TrainingScene", "Тренировка"),
-    new StubScene("CharacterInfoScene", "Информация о персонаже"),
     new StubScene("DeckScene", "Колода приёмов"),
   ],
 };
