@@ -29,7 +29,8 @@ export function applyPreviewSession(sceneKey: string | null): void {
       break;
     }
     case "RoomScene":
-    case "BattleSelectScene": {
+    case "BattleSelectScene":
+    case "CharacterInfoScene": {
       const style = getFightingStyle("street");
       session.setPlayer(
         new FighterProfile(
