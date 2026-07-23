@@ -10,6 +10,7 @@ export class FighterProfile {
   styleId?: FightingStyleId;
   abilityIds: string[];
   stats: FighterStatsDTO;
+  currency: number;
 
   constructor(
     name: string,
@@ -27,10 +28,21 @@ export class FighterProfile {
       speed: stats?.speed ?? defaultRng.nextInt(1, 10),
       luck: stats?.luck ?? defaultRng.nextInt(1, 10),
     };
+    this.currency = 0;
   }
 
   get maxHp(): number {
     return 60 + this.stats.stamina * 4;
+  }
+
+  earn(amount: number): void {
+    this.currency += amount;
+  }
+
+  spend(amount: number): boolean {
+    if (amount > this.currency) return false;
+    this.currency -= amount;
+    return true;
   }
 
   toDTO(): FighterProfileDTO {
@@ -39,11 +51,14 @@ export class FighterProfile {
       styleId: this.styleId,
       abilityIds: [...this.abilityIds],
       stats: { ...this.stats },
+      currency: this.currency,
     };
   }
 
   static fromDTO(dto: FighterProfileDTO): FighterProfile {
-    return new FighterProfile(dto.name, dto.abilityIds, dto.stats, dto.styleId);
+    const profile = new FighterProfile(dto.name, dto.abilityIds, dto.stats, dto.styleId);
+    profile.currency = dto.currency ?? 0;
+    return profile;
   }
 
   static fromFighter(fighter: Fighter, abilityIds: string[], styleId?: FightingStyleId): FighterProfile {

@@ -21,6 +21,7 @@ export type FighterProfileDTO = {
   styleId?: FightingStyleId;
   abilityIds: string[];
   stats: FighterStatsDTO;
+  currency?: number;
 };
 
 export type TimelineActionDTO =

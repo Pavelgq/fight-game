@@ -4,6 +4,7 @@ import { RoundPlayback } from "../../views/RoundPlayback/RoundPlayback";
 import { BattleLog } from "../../views/BattleLog/BattleLog";
 import { Fighter } from "../../model/Player/Fighter";
 import { BattleSession } from "../../model/Battle/BattleSession";
+import { battleConfig } from "../../model/Battle/constants";
 import { SimResult } from "../../model/Battle/simulateRound";
 import { BattleFieldController } from "../../controllers/BattleFieldController";
 import {
@@ -183,6 +184,12 @@ export class BattleScene extends Scene {
 
     if (result.battleEnded) {
       this.battleLog.addLine(`Итог: ${result.battleEnded.message}`);
+      if (!result.battleEnded.playerDead && result.battleEnded.enemyDead) {
+        const profile = GameSession.get().getPlayerProfile();
+        profile?.earn(battleConfig.victoryReward);
+        GameSession.get().save();
+        this.battleLog.addLine(`Награда: +${battleConfig.victoryReward}`);
+      }
       this.refresh();
       this.screen.showResult(result.battleEnded.message, result.battleEnded.color);
       GameSession.get().clearBattle();
