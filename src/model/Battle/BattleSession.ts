@@ -237,6 +237,10 @@ export class BattleSession {
   private finishPlayback(): BattleSessionResult {
     if (this.phase !== "playback") return { ok: false };
 
+    // Шаг «Завершение»: тик статус-эффектов до проверки смерти — кровотечение и т.п. может добить.
+    this.left.fighter.tickEffects();
+    this.right.fighter.tickEffects();
+
     const playerDead = this.left.fighter.health.isDeath();
     const enemyDead = this.right.fighter.health.isDeath();
 

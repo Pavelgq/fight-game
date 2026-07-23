@@ -2,6 +2,7 @@ import { Ability } from "../Player/Ability";
 import { Fighter } from "../Player/Fighter";
 import { FighterProfile } from "../Player/FighterProfile";
 import { abilityRegistry } from "../Player/abilities/AbilityRegistry";
+import { statusEffectRegistry } from "../Player/statusEffects/StatusEffectRegistry";
 import { Combatant } from "./Combatant";
 import { battleConfig } from "./constants";
 import {
@@ -64,6 +65,10 @@ export function combatantToState(combatant: Combatant): CombatantStateDTO {
     stance: combatant.stance,
     lastStance: combatant.lastStance,
     roundIndex: combatant.roundIndex,
+    activeEffects: fighter.activeEffects.map((a) => ({
+      id: a.effect.id,
+      roundsRemaining: a.roundsRemaining,
+    })),
   };
 }
 
@@ -76,6 +81,10 @@ export function combatantFromState(
   const fighter = profile.toFighter(abilities);
   fighter.health.currentValue = state.hp;
   fighter.health.maxValue = state.maxHp;
+  fighter.activeEffects = (state.activeEffects ?? []).map((a) => ({
+    effect: statusEffectRegistry.get(a.id),
+    roundsRemaining: a.roundsRemaining,
+  }));
 
   const combatant = new Combatant(fighter, rng ?? defaultRng);
   combatant.hand = abilityRegistry.getMany(state.hand);

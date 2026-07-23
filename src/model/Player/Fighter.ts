@@ -5,6 +5,7 @@ import { Ability, AbilityType } from "./Ability";
 import { FighterStatsDTO } from "../Battle/matchTypes";
 import { Rng, defaultRng } from "../Rng";
 import { Logger } from "../Logger";
+import { ActiveStatusEffect, StatusEffect, StatusEffectFlags } from "./StatusEffect";
 
 export class Fighter {
   name: string;
@@ -18,6 +19,7 @@ export class Fighter {
 
   inventory: Staff[] = [];
   abilities: Ability[] = [];
+  activeEffects: ActiveStatusEffect[] = [];
 
   constructor(
     name: string,
@@ -56,5 +58,43 @@ export class Fighter {
 
   addAbilities(abilities: Ability[]) {
     this.abilities.push(...abilities);
+  }
+
+  /** Применяет эффект: повторное наложение с тем же id перезаписывает (сбрасывает длительность). */
+  addEffect(effect: StatusEffect): void {
+    this.activeEffects = this.activeEffects.filter((a) => a.effect.id !== effect.id);
+    this.activeEffects.push({ effect, roundsRemaining: effect.durationRounds });
+  }
+
+  removeEffect(effectId: string): void {
+    this.activeEffects = this.activeEffects.filter((a) => a.effect.id !== effectId);
+  }
+
+  hasFlag(flag: keyof StatusEffectFlags): boolean {
+    return this.activeEffects.some((a) => a.effect.flags?.[flag]);
+  }
+
+  /** Сумма числовых модификаторов всех активных эффектов (нейтральные значения, если эффектов нет). */
+  effectModifiers() {
+    return this.activeEffects.reduce(
+      (acc, a) => ({
+        powerDelta: acc.powerDelta + (a.effect.modifiers?.powerDelta ?? 0),
+        agilityDelta: acc.agilityDelta + (a.effect.modifiers?.agilityDelta ?? 0),
+        budgetDelta: acc.budgetDelta + (a.effect.modifiers?.budgetDelta ?? 0),
+        damageTakenMultiplier:
+          acc.damageTakenMultiplier * (a.effect.modifiers?.damageTakenMultiplier ?? 1),
+      }),
+      { powerDelta: 0, agilityDelta: 0, budgetDelta: 0, damageTakenMultiplier: 1 }
+    );
+  }
+
+  /** Шаг «Завершение»: прогоняет разовые действия эффектов, тикает длительность, чистит истёкшие. */
+  tickEffects(): void {
+    for (const active of this.activeEffects) {
+      active.effect.onRoundEnd?.(this);
+      active.effect.custom?.(this);
+      active.roundsRemaining -= 1;
+    }
+    this.activeEffects = this.activeEffects.filter((a) => a.roundsRemaining > 0);
   }
 }

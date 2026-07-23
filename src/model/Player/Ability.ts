@@ -1,5 +1,6 @@
 import { AvailableSectionState } from "../Battle/zones";
 import { Fighter } from "./Fighter";
+import { StatusEffect } from "./StatusEffect";
 
 export type AbilityType = "attack" | "defence" | "dodge";
 
@@ -75,17 +76,21 @@ type AttackAbilityConstructorProps = {
    * 0 — только свой столбец, 1 — свой и соседний, 2 — любой столбец.
    */
   reach: number;
+  /** Статус-эффект, гарантированно накладываемый на защищающегося при чистом попадании. */
+  inflicts?: StatusEffect;
 } & Omit<AbilityConstructorProps, "type" | "guard" | "block">;
 
 export class AttackAbility extends Ability {
   damage: DamageConfig;
   /** Сколько столбцов от своей стойки достаёт атака (0/1/2). */
   reach: number;
+  inflicts?: StatusEffect;
 
-  constructor({ damage, reach, ...rest }: AttackAbilityConstructorProps) {
+  constructor({ damage, reach, inflicts, ...rest }: AttackAbilityConstructorProps) {
     super({ type: "attack", ...rest });
     this.damage = damage;
     this.reach = reach;
+    this.inflicts = inflicts;
   }
 
   /** Базовый урон без учёта характеристик (для отображения на карте). */

@@ -1,5 +1,6 @@
 import { calculateDamage } from "../Actions/DamageCalculator";
 import { AttackAbility, AbilityType } from "../Player/Ability";
+import { StatusEffect } from "../Player/StatusEffect";
 import { Combatant } from "./Combatant";
 import { battleConfig, clampStance } from "./constants";
 import { actionLabel, TimelineAction } from "./TimelineAction";
@@ -44,6 +45,7 @@ export type RoundSimulation = {
   maxHp: { left: number; right: number };
   endHp: { left: number; right: number };
   endStance: { left: number; right: number };
+  inflicted: { defenderSide: Side; effect: StatusEffect }[];
 };
 
 type Scheduled = {
@@ -123,6 +125,7 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
   strikes.sort((a, b) => a.time - b.time);
 
   const isDodged = (defender: Combatant, time: number, row: number, col: number) =>
+    !defender.fighter.hasFlag("dodgeDisabled") &&
     schedOf(defender).some(
       (item) =>
         item.action.kind === "ability" &&
@@ -133,6 +136,7 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
     );
 
   const blockKoef = (defender: Combatant, time: number, row: number, col: number) => {
+    if (defender.fighter.hasFlag("blockDisabled")) return 1;
     for (const item of schedOf(defender)) {
       if (
         item.action.kind === "ability" &&
@@ -150,6 +154,7 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
 
   const events: SimEvent[] = [];
   const cancelled = new Set<Scheduled>();
+  const inflicted: { defenderSide: Side; effect: StatusEffect }[] = [];
 
   const dealt = new Map<Combatant, number>();
   const damageCapFor = (c: Combatant) =>
@@ -207,7 +212,8 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
 
     const koef = blockKoef(strike.defender, strike.time, strike.row, strike.col);
     const raw = calculateDamage(strike.ability, strike.attacker.fighter);
-    const rolled = Math.max(0, Math.round(raw * koef));
+    const damageTakenMultiplier = strike.defender.fighter.effectModifiers().damageTakenMultiplier;
+    const rolled = Math.max(0, Math.round(raw * koef * damageTakenMultiplier));
 
     const already = dealt.get(strike.defender) ?? 0;
     const allowed = Math.max(0, damageCapFor(strike.defender) - already);
@@ -222,7 +228,12 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
       }
     }
 
-    events.push({ ...base, damage, result: koef < 1 ? "blocked" : "hit" });
+    const result: SimResult = koef < 1 ? "blocked" : "hit";
+    if (result === "hit" && strike.ability.inflicts) {
+      inflicted.push({ defenderSide: sideOf(strike.defender), effect: strike.ability.inflicts });
+    }
+
+    events.push({ ...base, damage, result });
   }
 
   const endStance = {
@@ -246,6 +257,7 @@ export function resolveRound(left: Combatant, right: Combatant): RoundSimulation
     },
     endHp: hpAfter,
     endStance,
+    inflicted,
   };
 }
 
@@ -261,6 +273,11 @@ export function applyRoundResult(
   right.lastStance = simulation.endStance.right;
   left.stance = simulation.endStance.left;
   right.stance = simulation.endStance.right;
+
+  for (const { defenderSide, effect } of simulation.inflicted) {
+    const target = defenderSide === "left" ? left : right;
+    target.fighter.addEffect(effect);
+  }
 }
 
 /**

@@ -35,9 +35,10 @@ export class Combatant {
     this.stance = battleConfig.startStance;
   }
 
-  /** Бюджет времени таймлайна на текущем раунде (с учётом стамины и усталости). */
+  /** Бюджет времени таймлайна на текущем раунде (с учётом стамины, усталости и активных эффектов). */
   budget(): number {
-    return roundBudget(this.fighter.stamina, this.roundIndex);
+    const { budgetDelta } = this.fighter.effectModifiers();
+    return roundBudget(this.fighter.stamina, this.roundIndex, budgetDelta);
   }
 
   usedTime(): number {

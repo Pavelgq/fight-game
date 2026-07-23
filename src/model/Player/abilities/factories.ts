@@ -1,5 +1,6 @@
 import { AvailableSectionState } from "../../Battle/zones";
 import { Ability, AttackAbility, DamageConfig, ZoneGuard } from "../Ability";
+import { StatusEffect } from "../StatusEffect";
 
 type AttackInput = {
   id: string;
@@ -9,6 +10,8 @@ type AttackInput = {
   /** Дальнобойность в столбцах от своей стойки: 0 — свой, 1 — соседний, 2 — любой. */
   reach: number;
   availableSector?: AvailableSectionState;
+  /** Статус-эффект, гарантированно накладываемый на защищающегося при чистом попадании. */
+  inflicts?: StatusEffect;
 };
 
 type DefenceInput = {

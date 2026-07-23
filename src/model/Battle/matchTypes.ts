@@ -24,6 +24,11 @@ export type FighterProfileDTO = {
   currency?: number;
 };
 
+export type ActiveStatusEffectDTO = {
+  id: string;
+  roundsRemaining: number;
+};
+
 export type TimelineActionDTO =
   | { kind: "step"; direction: 1 | -1 }
   | { kind: "ability"; abilityId: string; row?: number; col?: number };
@@ -39,6 +44,7 @@ export type CombatantStateDTO = {
   stance: number;
   lastStance: number;
   roundIndex: number;
+  activeEffects?: ActiveStatusEffectDTO[];
 };
 
 /** Полный снимок матча — только JSON-совместимые поля. */

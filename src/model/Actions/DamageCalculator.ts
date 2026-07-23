@@ -12,9 +12,9 @@ export function calculateDamage(ability: AttackAbility, attacker: Fighter): numb
     return cfg.custom(attacker);
   }
 
-  return (
-    cfg.base +
-    attacker.power * (cfg.power ?? 0) +
-    attacker.agility * (cfg.agility ?? 0)
-  );
+  const mods = attacker.effectModifiers();
+  const power = attacker.power + mods.powerDelta;
+  const agility = attacker.agility + mods.agilityDelta;
+
+  return cfg.base + power * (cfg.power ?? 0) + agility * (cfg.agility ?? 0);
 }
