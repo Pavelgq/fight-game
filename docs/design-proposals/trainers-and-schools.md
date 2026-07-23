@@ -1,6 +1,6 @@
 # Trainers, schools & ability progression
 
-Status: **early design — needs foundational systems that don't exist yet before any UI work makes sense.**
+Status: **design decided — open questions resolved, still needs foundational systems (currency, time, reputation) before any UI work.**
 
 ## The pitch
 
@@ -29,22 +29,22 @@ Does **not** exist yet (checked directly in the codebase, not assumed):
 
 This means the trainer system needs several **foundational** model pieces before a `Trainer`/`Training` concept can be built on top, let alone before `TrainerScene`/`TrainerSelectScene`/`TrainingScene` (currently stubs, see `src/game.ts`) can show anything real.
 
-## Open questions — need your call
+## Decisions
 
-1. Money, time, or both as the training cost? (Affects whether a currency system is even needed first.)
-2. What does "reputation" mean concretely — a single number per trainer, per school, or global? What raises/lowers it?
-3. What does "drilling improves the card" mean numerically — a small stat bump on your copy of the ability, a cap on how much, diminishing returns?
-4. What's a combo, mechanically — same-school abilities used in the same round get a bonus? Adjacent ticks? This is flagged in the pitch as wide-open design space; needs a concrete first version, not an abstract system.
+1. **Training cost:** both money and time. Needs a currency system and a time-cost/duration primitive — not just one or the other.
+2. **Reputation:** a single number **per trainer** (not per school or global). Exact gain/loss triggers still TBD when the reputation system is actually built.
+3. **Drilling:** a small stat bump on the player's copy of the ability per drill session. Exact balancing (caps, diminishing returns) deliberately deferred — there's no balancing framework yet, revisit once one exists.
+4. **Combo, first version:** a bonus for placing same-school abilities **back-to-back on the timeline** (consecutive ticks). Simple, easy for the player to read.
 
 ## Rough decomposition (foundational-first order)
 
-- [ ] Design doc addendum answering the 4 questions above
-- [ ] Model: currency and/or time-cost primitive (whichever the answer to Q1 needs) — new, foundational
-- [ ] Model: `Trainer` entity — id, name, school (`FightingStyleId`), reputation requirement, cost, ability(ies) offered
-- [ ] Model: reputation/relationship tracking per the answer to Q2
+- [x] ~~Design doc addendum answering the 4 questions above~~ — done, see Decisions
+- [ ] Model: currency primitive **and** a time-cost/duration primitive — new, foundational, both needed per Q1
+- [ ] Model: `Trainer` entity — id, name, school (`FightingStyleId`), reputation requirement (single number), cost (money + time), ability(ies) offered
+- [ ] Model: per-trainer reputation tracking
 - [ ] Model: training flow — spend cost, wait duration, unlock ability id into the player's pool
-- [ ] Model: ability "level"/drilling — needs to change abilities from static definitions to something with a per-player mutable component (bigger change than it sounds; today `AbilityRegistry` returns shared immutable objects)
-- [ ] Model: first concrete combo rule (start with one simple, shippable version, not a general framework)
+- [ ] Model: ability "level"/drilling — small stat bump per drill; needs to change abilities from static definitions to something with a per-player mutable component (bigger change than it sounds; today `AbilityRegistry` returns shared immutable objects). Balancing numbers deferred.
+- [ ] Model: first combo rule — consecutive same-school abilities on the timeline get a bonus
 - [ ] Screens: replace `TrainerSelectScene` and `TrainingScene` stubs once the model above exists
 - [ ] Content: a first roster of 2-3 trainers per existing school as reference data
 

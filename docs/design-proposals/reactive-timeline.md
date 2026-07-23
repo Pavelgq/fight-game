@@ -1,6 +1,6 @@
 # Reactive tick-by-tick round resolution
 
-Status: **early design — has open questions that need the maintainer's decision before implementation starts.**
+Status: **design decided — open questions resolved, ready to decompose into implementation issues.**
 
 ## The problem this solves
 
@@ -22,24 +22,27 @@ Worked example from the design pitch, kept verbatim because it's the clearest sp
 
 (Translation: I planned a step back while the opponent planned a 2-tick punch. Tick resolves: I see the opponent is attacking and that I've already stepped back, so I guess I need to duck — I pick crouch. Next tick: the opponent missed and stepped forward; I've already stood back up from the duck. We both pick new cards.)
 
-## Open questions — need your call, not an engineering guess
+## Decisions
 
-The pitch itself flags these as unresolved ("пока не знаю"), so implementation should not start until they're answered:
+1. **What counts as one tick?** One time-budget unit — the smallest granularity. A pause happens after every unit of `speed` spent, so a multi-tick action can be interrupted mid-way through.
+2. **Multi-tick actions in progress.** Not a simple lock/cancel binary:
+   - If the opponent's action already landed on you, there's a **chance (not guaranteed)** it interrupted your in-progress action.
+   - If the opponent dodged/repositioned so your action will now miss, you can **attempt to cancel** it yourself.
+   - The **longer your action has already been running (more ticks elapsed), the lower the chance you can successfully interrupt it** — deep commitment is harder to back out of.
+   - If interrupted (by the opponent's hit or your own cancel), you're free to start a new action or move.
+3. **Symmetry.** Fully symmetric — the AI opponent reacts the same way the player does, but it only ever sees the **last fully-completed tick**, same as the player. Neither side sees the future, mirroring how a real fight actually works.
+4. **Balance fallout.** Confirmed as a real consequence, not resolved yet — re-tuning happens once the new flow is playable (see decomposition below).
 
-1. **What counts as one tick?** Today, time is a budget consumed by ability `speed` (2–5 units), not a literal per-frame clock. Is a "tick" one time-budget unit, or something coarser (e.g. one card resolving)?
-2. **Multi-tick actions in progress.** If you committed to a 2-tick punch and a new tick reveals the opponent dodged, are you locked into the remaining tick of your own action, or do you also get to react? The pitch says "надо тоже придумать" (also needs figuring out) — this is the crux of the whole system and isn't decided yet.
-3. **Symmetry.** Does the AI opponent get the same mid-round reveal-and-replan loop, or does only the player get to react (with the AI's plan fixed from the start)? This has large fairness and difficulty implications, and ties directly into the AI weakness already tracked in [BACKLOG.md](../BACKLOG.md) (`ai.ts` never reads the player's real stance).
-4. **Balance fallout.** Reducing blind-commitment uncertainty is a fundamental difficulty/pacing change. Abilities tuned for a "you can't see this coming" model may need re-tuning once players can react mid-round.
+## Rough decomposition
 
-## Rough decomposition (once the open questions above are answered)
-
-- [ ] Write down concrete answers to the 4 questions above as an addendum to this doc — blocks everything else
-- [ ] Model: replace (or extend) `resolveRound()` in `src/model/Battle/simulateRound.ts` with an incremental resolver that can stop after N ticks and report partial state + which opponent actions are now "visible"
-- [ ] Model: define replanning rules for in-flight actions (locked vs. cancellable) per the answer to question 2
+- [x] ~~Write down concrete answers to the 4 questions above~~ — done, see Decisions
+- [ ] Model: replace (or extend) `resolveRound()` in `src/model/Battle/simulateRound.ts` with an incremental resolver that stops after each tick and reports partial state + which opponent actions are now visible
+- [ ] Model: implement the interrupt-chance mechanic — probability decreases as a function of ticks already elapsed on the in-progress action
+- [ ] Model: distinguish "opponent's hit landed and rolled an interrupt" vs. "player-initiated cancel because the opponent is now unreachable" as two distinct triggers into the same interrupt resolution
 - [ ] `BattleSession`: new command flow to replace the current single `submitRound` — something like `revealNextTick()` / `replanFrom(tick)` / `commitTick()`
-- [ ] AI: extend `ai.ts` to plan reactively if question 3 says it should (this would also close the existing "AI ignores player stance" backlog item as a side effect)
-- [ ] UI: `RoundPlayback`/`TimelineStrip` need a real "pause here, let me edit" interaction instead of pure animated playback
+- [ ] AI: extend `ai.ts` to plan reactively, seeing only the last completed tick — this also closes the existing "AI ignores player stance" backlog item as a side effect
+- [ ] UI: `RoundPlayback`/`TimelineStrip` need a real "pause here, let me edit" interaction instead of pure animated playback, plus a visible indicator of interrupt chance/elapsed ticks on in-progress actions
 - [ ] Balance pass across `src/model/Player/abilities/*.ts` once the new information flow is playable
 - [ ] Update [GAME_DESIGN.en.md](../GAME_DESIGN.en.md) / `.ru.md` and `.cursor/rules/battle-mechanics.mdc` to describe the new flow once it's implemented
 
-This is large enough that it should land as its own tracked epic (or milestone) rather than a single issue, once question 1–3 are answered.
+This is large enough that it should land as its own tracked epic (or milestone) rather than a single issue.

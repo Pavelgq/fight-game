@@ -1,6 +1,6 @@
 # Location-specific abilities
 
-Status: **early design — smallest of the four proposals, no "location" concept exists yet.**
+Status: **design decided — open questions resolved, no "location" concept exists yet.**
 
 ## The pitch
 
@@ -14,18 +14,17 @@ Checked directly in the codebase:
 
 So this needs a new `Location`/`Arena` entity from scratch, plus a decision on how a battle gets assigned one (fixed per opponent? player picks separately? random?).
 
-## Open questions
+## Decisions
 
-1. Is location chosen by the player (a location-select step, similar to opponent select), tied to the opponent, or randomized per battle?
-2. Is the granted ability visible in the hand from the start of the battle, or does it need to be "discovered"/highlighted as special so the player understands it's temporary and location-only?
-3. Does "deals damage even if blocked" need a new mechanical flag on abilities (e.g. `ignoresBlock: true`) or is it closer to an existing mechanic already in `DamageCalculator.ts`/`Defense.ts`? (Worth checking before designing a new flag — DamageCalculator.ts currently has no test coverage either, see [BACKLOG.md](../BACKLOG.md), so verify its actual behavior before assuming.)
+1. **Location assignment:** context-dependent — sometimes random, sometimes fixed by the surrounding context (e.g. a tournament format could pin a location). Note: "tournament" is itself not a concept that exists in the code yet either — this is a dependency worth tracking separately if tournament structure ever gets its own proposal.
+2. **Visibility:** the location's ability is **mixed into the deck** like any other card — it may or may not be drawn into hand during a given battle, same as regular cards. Not guaranteed-visible from the start.
+3. **"Deals damage even if blocked":** not a special case. Any ability card can already carry an arbitrary custom effect — this is just one example effect, not a mechanic unique to location abilities requiring its own flag. Whatever effect system abilities use generally is sufficient here.
 
 ## Rough decomposition
 
-- [ ] Answer the 3 questions above
+- [x] ~~Answer the 3 questions above~~ — done, see Decisions
 - [ ] Model: `Location` entity — id, name, and the ability id it grants
-- [ ] Model: decide + implement how a battle gets an associated location (per the answer to Q1)
-- [ ] Model: inject the location's ability into the player's available cards for that battle only — not a permanent unlock, unlike trainer-taught abilities (see [trainers-and-schools.md](trainers-and-schools.md))
-- [ ] Model: implement (or confirm existing support for) a block-ignoring damage flag per Q3
+- [ ] Model: decide + implement how a specific battle gets an associated location — random by default, with a way for a fixed context (e.g. future tournament structure) to pin one
+- [ ] Model: mix the location's ability into the deck for that battle only (not a permanent unlock, unlike trainer-taught abilities — see [trainers-and-schools.md](trainers-and-schools.md)) — reuse whatever general per-ability effect mechanism abilities already support, no new flag needed
 - [ ] Content: ship "sand throw" as the first reference location ability, exactly as pitched
-- [ ] UI: visually distinguish the location-granted card in hand (per Q2) so it doesn't read as a permanent ability
+- [ ] UI: decide whether a location-granted card drawn into hand needs any visual distinction, or is treated exactly like a normal card (leaning toward "no distinction needed" since it's just a normal deck card mechanically — confirm during implementation)
