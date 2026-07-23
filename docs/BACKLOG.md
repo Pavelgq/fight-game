@@ -4,8 +4,8 @@ Working list of known problems and improvement ideas, prioritized. Not GitHub is
 
 ## P0 — correctness / data risk
 
-- [ ] **Zero test coverage on core combat logic.** `src/model/Battle/BattleSession.ts` (the whole round command/orchestration API), `src/model/Actions/DamageCalculator.ts`, `src/model/Battle/ai.ts`, `src/model/Player/Fighter.ts`, `Health.ts`, `Staff.ts`, `src/model/Battle/matchState.ts` (save/load DTOs) all have no Vitest coverage. A bug here either breaks combat silently or corrupts saved games.
-- [ ] **Silent profile loss on deserialize failure.** `src/session/GameSession.ts` falls back to `new GameSession()` if `fromDTO`/deserialize throws (e.g. after a future DTO shape change) — player's saved profile disappears with no error surfaced. Needs either schema versioning/migration or at least a visible warning instead of silent reset.
+- [x] ~~Zero test coverage on core combat logic~~ — resolved. `src/model/**` now has ~98% statement coverage (161 tests across 20 files): `BattleSession.ts`, `DamageCalculator.ts`, `ai.ts`, `Fighter.ts`, `Health.ts`, `FighterProfile.ts`, `matchState.ts` and the rest of the model are all covered. Shared test builders live in `src/model/testFixtures.ts`. Run `npm run test:coverage` for the report (v8 provider, configured in `vitest.config.ts`).
+- [ ] **Silent profile loss on deserialize failure.** `src/session/GameSession.ts` falls back to `new GameSession()` if `fromDTO`/deserialize throws (e.g. after a future DTO shape change) — player's saved profile disappears with no error surfaced. Needs either schema versioning/migration or at least a visible warning instead of silent reset. Note: `FighterProfile.fromDTO` and `combatantFromState` already degrade gracefully for a few individually-added optional fields (`currency`, `activeEffects`) via `?? default` — this item is about the general case (a real shape change breaking `JSON.parse` or a required field), not those specific fields.
 
 ## P1 — gameplay depth
 
